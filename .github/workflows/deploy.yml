@@ -29,4 +29,4 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "jupegarnica-v2022" # the name of the project on Deno Deploy
-          entrypoint: "./serve.tsx" # the entrypoint to deploy
+          entrypoint: "./_serve.ts" # the entrypoint to deploy
