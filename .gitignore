@@ -1,0 +1,4 @@
+.DS_Store
+_cache
+node_modules
+.wrangler

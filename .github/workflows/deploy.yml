@@ -2,31 +2,26 @@ name: Deploy
 
 on:
   push:
-  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   deploy:
+    name: Deploy to Cloudflare Workers
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
+    concurrency:
+      group: deploy-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: get deno
-        uses: denoland/setup-deno@v1
+      # El sitio ya viene compilado en ./_site (Lume 1.x no compila en Deno 2)
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          deno-version: v1.x
-
-      - name: build 2022
-        run: deno task build
-
-      - name: Deploy to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: "jupegarnica-v2022" # the name of the project on Deno Deploy
-          entrypoint: "./_serve.ts" # the entrypoint to deploy
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Static Assets requiere Wrangler 4 (el default de la action es 3.90)
+          wranglerVersion: "4"
